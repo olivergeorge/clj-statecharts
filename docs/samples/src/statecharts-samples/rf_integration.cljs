@@ -2,7 +2,7 @@
 
 (ns statecharts-samples.rf-integration
   (:require [re-frame.core :as rf]
-            [statecharts.core :as fsm :refer [assign]]
+            [statecharts.core :as fsm]
             [statecharts.integrations.re-frame :as fsm.rf]))
 
 (def friends-path [(rf/path :friends)])
@@ -23,18 +23,18 @@
 
 (def friends-machine
   (fsm/machine
-   {:id      :friends
-    :initial :loading
-    :integrations {:re-frame {:path friends-path
-                              :initialize-event :friends/init
-                              :transition-event :friends/fsm-event}}
-    :states
-    {:loading     {:entry load-friends
-                   :on    {:success-load {:actions (assign on-friends-loaded)
-                                          :target  :loaded}
-                           :fail-load    {:actions (assign on-friends-load-failed)
-                                          :target  :load-failed}}}
-     :loaded      {}
-     :load-failed {}}}))
+    {:id           :friends
+     :initial      :loading
+     :integrations {:re-frame {:path             friends-path
+                               :initialize-event :friends/init
+                               :transition-event :friends/fsm-event}}
+     :states
+                   {:loading     {:entry load-friends
+                                  :on    {:success-load {:actions on-friends-loaded
+                                                         :target  :loaded}
+                                          :fail-load    {:actions on-friends-load-failed
+                                                         :target  :load-failed}}}
+                    :loaded      {}
+                    :load-failed {}}}))
 
 ;; END SAMPLE

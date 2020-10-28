@@ -195,15 +195,11 @@
     (validate-targets conformed)
     conformed))
 
-;; TODO: use deftype. We use defrecord because it has a handy
-;; toString.
-(defrecord ContextAssignment [v])
-
-(defn assign
+(defn ^:deprecated assign
   "Wrap a function into a context assignment function."
   [f]
   (fn [& args]
-    (ContextAssignment. (apply f args))))
+    (apply f args)))
 
 (defn- internal-action? [action]
   (and (map? action)
@@ -242,10 +238,7 @@
                (do
                  (execute-internal-action fsm new-state event action)
                  new-state)
-               (let [retval (action new-state event)]
-                 (if (instance? ContextAssignment retval)
-                   (merge new-state (.-v retval))
-                   new-state))))
+               (action new-state event)))
            (cond-> state
              (not debug)
              (dissoc :_actions))

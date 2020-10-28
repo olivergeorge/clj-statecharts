@@ -1,7 +1,7 @@
 ;; BEGIN SAMPLE
 
 (ns statecharts-samples.rf-integration-service
-  (:require [statecharts.core :as fsm :refer [assign]]
+  (:require [statecharts.core :as fsm]
             [re-frame.core :as rf]
             [statecharts.integrations.re-frame :as fsm.rf]))
 
@@ -15,12 +15,13 @@
    (fsm/start friends-service)          ;; (1)
    nil))
 
-(defn load-friends []
+(defn load-friends [s e]
   (send-http-request
    {:uri "/api/get-friends.json"
     :method :get
     :on-success #(fsm/send friends-service {:type :success-load :data %})
-    :on-failure #(fsm/send friends-service {:type :fail-load :data %})}))
+    :on-failure #(fsm/send friends-service {:type :fail-load :data %})})
+  s)
 
 (defn on-friends-loaded [state {:keys [data]}]
   (assoc state :friends (:friends data)))
@@ -30,16 +31,16 @@
 
 (def friends-machine
   (fsm/machine
-   {:id      :friends
-    :initial :loading
-    :states
-    {:loading     {:entry load-friends
-                   :on    {:success-load {:actions (assign on-friends-loaded)
-                                          :target  :loaded}
-                           :fail-load    {:actions (assign on-friends-load-failed)
-                                          :target  :load-failed}}}
-     :loaded      {}
-     :load-failed {}}}))
+    {:id      :friends
+     :initial :loading
+     :states
+              {:loading     {:entry load-friends
+                             :on    {:success-load {:actions on-friends-loaded
+                                                    :target  :loaded}
+                                     :fail-load    {:actions on-friends-load-failed
+                                                    :target  :load-failed}}}
+               :loaded      {}
+               :load-failed {}}}))
 
 (defonce friends-service (fsm/service friends-machine))
 
