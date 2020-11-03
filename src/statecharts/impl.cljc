@@ -10,6 +10,8 @@
             [statecharts.macros :refer [prog1]])
   (:refer-clojure :exclude [send]))
 
+(declare check-or-throw)
+
 (defn canon-one-transition [x]
   (if (map? x)
     x
