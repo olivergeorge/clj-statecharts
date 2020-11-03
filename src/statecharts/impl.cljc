@@ -516,9 +516,7 @@
    input-event]
   (let [nodes (expand-path fsm _state)
 
-        [transitions affected-nodes]
-        (prog1 (find-handler nodes type)
-          (check-or-throw (first <>) :event type :state _state))
+        [transitions affected-nodes] (find-handler nodes type)
 
         tx (pick-transitions state input-event transitions)]
     (if (nil? tx)
