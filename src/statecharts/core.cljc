@@ -7,7 +7,7 @@
 (def machine impl/machine)
 (def initialize impl/initialize)
 (def transition impl/transition)
-(def assign impl/assign)
+(def ^:deprecated assign impl/assign)
 
 (def service service/service)
 (defn start [service]

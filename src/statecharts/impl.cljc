@@ -202,8 +202,7 @@
 (defn assign
   "Wrap a function into a context assignment function."
   [f]
-  (fn [& args]
-    (ContextAssignment. (apply f args))))
+  f)
 
 (defn- internal-action? [action]
   (and (map? action)
@@ -242,10 +241,8 @@
                (do
                  (execute-internal-action fsm new-state event action)
                  new-state)
-               (let [retval (action new-state event)]
-                 (if (instance? ContextAssignment retval)
-                   (merge new-state (.-v retval))
-                   new-state))))
+               (prog1 (action new-state event)
+                      (check-or-throw (:_state <>) :retval <>))))
            (cond-> state
              (not debug)
              (dissoc :_actions))
